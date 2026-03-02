@@ -1,76 +1,14 @@
-import React, { useState, useEffect } from 'react';
-
-export default function FreedomRoadBrain() {
-  // 模拟数据中心：以后这里就是接入 API 的“插座”
-  const [data, setData] = useState({
-    a50: 13522.0,
-    oil: 82.45,
-    gold: 2135.0,
-    news: "系统自检完成，正在等待实时信号接入...",
-    analysis: "初始化中..."
-  });
-
-  // 秒级自检逻辑：每5秒触发一次“情报审计”
-  useEffect(() => {
-    const scoutTimer = setInterval(() => {
-      // 这是未来接入“全球甄别引擎”的入口
-      console.log("先行兵：正在扫描全球突发...");
-    }, 5000);
-    return () => clearInterval(scoutTimer);
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 p-4 font-sans">
-      {/* 状态看板 */}
-      <div className="rounded-[2rem] bg-gradient-to-br from-slate-900 to-black p-6 border border-slate-800 shadow-2xl mb-6">
-        <div className="flex justify-between items-center mb-6">
-          <span className="text-[10px] tracking-[.3em] font-black text-blue-500 italic">FREEDOM ROAD ALPHA</span>
-          <div className="flex gap-1">
-             <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse"></div>
-             <span className="text-[10px] font-mono text-red-600">LIVE</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-             <p className="text-[10px] text-slate-500 font-bold uppercase">A50 Index</p>
-             <p className="text-3xl font-black italic text-red-500">{data.a50}</p>
-          </div>
-          <div className="text-right">
-             <p className="text-[10px] text-slate-500 font-bold uppercase">Oil / Gold</p>
-             <p className="text-xl font-black text-yellow-500">{data.oil} / {data.gold}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 战争与宏观实时审计 */}
-      <div className="bg-red-950/20 border border-red-900/40 rounded-3xl p-5 mb-6">
-        <h2 className="text-[10px] font-black text-red-500 tracking-widest uppercase mb-3">AI 战略甄别 (WAR SCANNED)</h2>
-        <div className="bg-black/60 p-4 rounded-2xl border border-red-900/20">
-          <p className="text-xs text-slate-300 leading-relaxed italic">
-            "{data.news}"
-          </p>
-        </div>
-      </div>
-
-      {/* 指挥官对话窗 */}
-      <div className="bg-slate-900/80 rounded-3xl p-5 border border-slate-800">
-        <h2 className="text-[10px] font-black text-blue-400 tracking-widest uppercase mb-4 italic italic">Gemini 战略参谋长</h2>
-        <div className="bg-black/40 h-24 rounded-2xl p-3 text-[11px] text-slate-400 mb-4 overflow-hidden italic">
-          正在准备接入全球数据库...
-        </div>
-        <div className="relative">
-          <input 
-            type="text" 
-            placeholder="下达情报搜集指令..."
-            className="w-full bg-slate-800 border-none rounded-2xl py-3 px-4 text-xs text-white outline-none"
-          />
-        </div>
-      </div>
-
-      <div className="mt-8 text-center opacity-30">
-        <p className="text-[9px] font-bold tracking-[.5em]">FIRST COMMAND: STANDBY</p>
-      </div>
-    </div>
-  );
+{
+  "name": "freedom-road-brain",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "next": "latest"
+  }
 }

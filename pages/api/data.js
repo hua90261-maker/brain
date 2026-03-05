@@ -15,6 +15,6 @@ export default async function handler(req, res) {
       "情报：原油成本端支撑位确认",
       "提醒：关注行业热度超过 1.5x 的机会"
     ],
-    time: new Date().toLocaleTimeString('zh-CN', { hour12: false })
+    time:new Date(new Date().getTime() + 8 * 3600 * 1000).toISOString().replace(/T/, ' ').replace(/\..+/, '').split(' ')[1]
   });
 }

@@ -1,37 +1,32 @@
 export default async function handler(req, res) {
   try {
-    // 【核心修复】强制计算北京时间 (UTC+8)
-    const now = new Date();
-    const bjTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
-    const timeString = bjTime.toISOString().replace(/T/, ' ').replace(/\..+/, '').split(' ')[1];
+    const bjTime = new Date(new Date().getTime() + 8 * 3600 * 1000).toISOString().replace(/T/, ' ').replace(/\..+/, '').split(' ')[1];
+    
+    // 生成涨跌幅的逻辑：正数为红，负数为绿
+    const getChange = () => (Math.random() * 6 - 3).toFixed(2); 
 
-    // 【基建 A】全行业成交量监控雷达 (Heat = 当前成交/均量)
-    // 统帅，这里为您锁定了您关注的核心行业
     const sectors = [
-      { name: '电力设备', heat: (1.5 + Math.random()).toFixed(2), trend: '放量突破', target: '望变电气' },
-      { name: '基础化工', heat: (0.9 + Math.random()).toFixed(2), trend: '缩量回调', target: '龙佰集团' },
-      { name: '能源金属', heat: (1.8 + Math.random()).toFixed(2), trend: '资金流入', target: '赣锋锂业' },
-      { name: '汽车零部件', heat: (0.7 + Math.random()).toFixed(2), trend: '持平', target: '--' },
-      { name: '机械设备', heat: (1.1 + Math.random()).toFixed(2), trend: '震荡', target: '--' },
-      { name: '家用电器', heat: (1.3 + Math.random()).toFixed(2), trend: '异动', target: '--' }
-    ].sort((a, b) => b.heat - a.heat); // 自动按热度排序，把最火的顶上来
+      { name: '能源金属', change: getChange(), heat: '2.54', trend: '爆量' },
+      { name: '家用电器', change: getChange(), heat: '1.97', trend: '走强' },
+      { name: '电力设备', change: getChange(), heat: '1.96', trend: '突破' },
+      { name: '汽车零部件', change: getChange(), heat: '1.57', trend: '活跃' },
+      { name: '机械设备', change: getChange(), heat: '-1.37', trend: '缩量' },
+      { name: '基础化工', change: getChange(), heat: '-1.03', trend: '调整' }
+    ];
 
-    // 【基建 B】全球快讯实时监听
-    const intelligence = [
-      `[宏观] A50 指数当前压力位 13550，观察量能配合。`,
-      `[情报] 原油受地缘扰动，70美元关口支撑强劲。`,
-      `[行业] ${sectors[0].name} 板块成交量达标，触发【自由之路】筛选机制。`,
-      `[实时] 离岸人民币震荡，资金流向资源类防御板块。`
+    const news = [
+      "【实时】A50 指数突破压力位，大金融资金出现明显护盘轨迹。",
+      "【全球】美原油站稳 70 美元，资源类板块避险情绪抬升。",
+      "【指令】全行业监控触发：能源金属板块成交量标准差超标，锁定目标个股。",
+      "【快讯】离岸人民币汇率波动收窄，利好制造业出口预期。"
     ];
 
     res.status(200).json({
-      a50: (13500 + Math.random() * 20).toFixed(1),
-      oil: (70.4 + Math.random() * 0.4).toFixed(2),
-      sectors: sectors,
-      news: intelligence,
-      time: timeString
+      a50: { val: "13516.1", chg: "+0.45%" },
+      oil: { val: "70.69", chg: "-0.12%" },
+      sectors,
+      news,
+      time: bjTime
     });
-  } catch (e) {
-    res.status(500).json({ error: "SYSTEM_ERR" });
-  }
+  } catch (e) { res.status(500).json({ error: "ERR" }); }
 }

@@ -1,32 +1,34 @@
 export default async function handler(req, res) {
   try {
     const bjTime = new Date(new Date().getTime() + 8 * 3600 * 1000).toISOString().replace(/T/, ' ').replace(/\..+/, '').split(' ')[1];
-    
-    // 生成涨跌幅的逻辑：正数为红，负数为绿
-    const getChange = () => (Math.random() * 6 - 3).toFixed(2); 
 
-    const sectors = [
-      { name: '能源金属', change: getChange(), heat: '2.54', trend: '爆量' },
-      { name: '家用电器', change: getChange(), heat: '1.97', trend: '走强' },
-      { name: '电力设备', change: getChange(), heat: '1.96', trend: '突破' },
-      { name: '汽车零部件', change: getChange(), heat: '1.57', trend: '活跃' },
-      { name: '机械设备', change: getChange(), heat: '-1.37', trend: '缩量' },
-      { name: '基础化工', change: getChange(), heat: '-1.03', trend: '调整' }
-    ];
+    // 1. 全市场细分行业扫描 (模拟 30+ 行业池)
+    const allSectors = [
+      { name: '能源金属', change: '+2.14', heat: 2.54, sub: '锂/钴', stock: '赣锋锂业', status: 'PASS' },
+      { name: '电网设备', change: '+1.85', heat: 2.11, sub: '变压器', stock: '望变电气', status: 'PASS' },
+      { name: '基础化工', change: '-1.02', heat: 1.03, sub: '钛白粉', stock: '龙佰集团', status: 'HOLD' },
+      { name: '半导体', change: '+3.55', heat: 2.88, sub: '先进封装', stock: '通富微电', status: 'PASS' },
+      // ... 更多细分行业
+    ].sort((a, b) => b.heat - a.heat);
 
-    const news = [
-      "【实时】A50 指数突破压力位，大金融资金出现明显护盘轨迹。",
-      "【全球】美原油站稳 70 美元，资源类板块避险情绪抬升。",
-      "【指令】全行业监控触发：能源金属板块成交量标准差超标，锁定目标个股。",
-      "【快讯】离岸人民币汇率波动收窄，利好制造业出口预期。"
+    // 2. “自由之路”严格选股过滤逻辑
+    // 只有成交量比 > 2.0 且 涨幅 > 1% 的行业个股才会在首页置顶
+    const recommendations = allSectors.filter(s => s.heat > 2.0 && parseFloat(s.change) > 1);
+
+    // 3. 全球实时监听流 (后续接入正式 API)
+    const intel = [
+      `[实时] A50 净流入 1.2 亿，主力资金正在攻击 [${recommendations[0]?.name}] 板块。`,
+      `[情报] 美联储最新声明利好资源品，锁定 ${recommendations[0]?.stock}。`,
+      `[预警] 全球供应链异动，制造业出口逻辑强化，关注电网设备放量。`
     ];
 
     res.status(200).json({
-      a50: { val: "13516.1", chg: "+0.45%" },
-      oil: { val: "70.69", chg: "-0.12%" },
-      sectors,
-      news,
+      a50: { val: "13521.4", chg: "+0.48%" },
+      oil: { val: "70.23", chg: "-0.15%" },
+      sectors: allSectors,
+      recommendations,
+      news: intel,
       time: bjTime
     });
-  } catch (e) { res.status(500).json({ error: "ERR" }); }
+  } catch (e) { res.status(500).json({ error: "SIGNAL_INTERRUPT" }); }
 }

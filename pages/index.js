@@ -1,67 +1,72 @@
 import React, { useState, useEffect } from 'react';
 
-export default function AlphaCommand() {
-  const [m, setM] = useState({ a50: {}, oil: {}, sectors: [], news: [], recommendations: [], time: '校准中' });
+export default function RealtimeCommand() {
+  const [m, setM] = useState({ a50: {}, oil: {}, sectors: [], news: [], time: '...' });
 
   useEffect(() => {
-    const sync = async () => {
+    const fetcher = async () => {
       try {
         const res = await fetch('/api/data');
         const data = await res.json();
         setM(data);
-      } catch (e) { console.error("断连"); }
+      } catch (e) { console.log("信号断连"); }
     };
-    sync();
-    const timer = setInterval(sync, 3000);
-    return () => clearInterval(timer);
+    fetcher();
+    const interval = setInterval(fetcher, 3000); // 3秒刷新一次，看数字跳不跳
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <div style={{ backgroundColor: '#000', color: '#fff', minHeight: '100vh', padding: '20px', fontFamily: 'monospace' }}>
-      {/* 状态行 */}
-      <div style={{ borderBottom: '2px solid #f00', paddingBottom: '10px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
-        <h1 style={{ color: '#f00', fontSize: '24px' }}>自由之路 · 实战指挥部</h1>
-        <div style={{ textAlign: 'right', color: '#f00' }}>BEIJING: {m.time}</div>
+    <div style={{ backgroundColor: '#000', color: '#fff', minHeight: '100vh', padding: '20px', fontFamily: 'system-ui' }}>
+      {/* 顶部状态栏 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #333', paddingBottom: '10px', marginBottom: '20px' }}>
+        <h1 style={{ color: '#f00', fontSize: '24px', margin: 0 }}>自由之路 · INDEPENDENT MIND</h1>
+        <div style={{ textAlign: 'right', color: '#f00', fontSize: '18px', fontWeight: 'bold' }}>BEIJING: {m.time}</div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '20px' }}>
-        {/* 左侧：情报流与宏观 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr 1fr', gap: '20px' }}>
+        {/* 左：核心数据 */}
         <div>
-          <div style={{ background: '#111', padding: '15px', borderRadius: '10px', marginBottom: '20px' }}>
-            <p style={{ color: '#666', fontSize: '10px' }}>GLOBAL NEWS</p>
-            {m.news.map((n, i) => <p key={i} style={{ fontSize: '11px', color: '#aaa', borderLeft: '2px solid #f00', paddingLeft: '8px' }}>{n}</p>)}
+          <div style={{ background: '#111', padding: '20px', borderRadius: '15px', marginBottom: '15px' }}>
+            <p style={{ color: '#666', margin: '0 0 5px 0' }}>FTSE A50</p>
+            <p style={{ fontSize: '30px', fontWeight: '900', color: '#f44', margin: 0 }}>{m.a50.val}</p>
           </div>
-          <div style={{ background: '#111', padding: '15px', borderRadius: '10px' }}>
-            <p style={{ color: '#666', fontSize: '10px' }}>A50: {m.a50.val} ({m.a50.chg})</p>
-            <p style={{ color: '#666', fontSize: '10px' }}>OIL: {m.oil.val} ({m.oil.chg})</p>
+          <div style={{ background: '#111', padding: '20px', borderRadius: '15px' }}>
+            <p style={{ color: '#666', margin: '0 0 5px 0' }}>WTI OIL</p>
+            <p style={{ fontSize: '30px', fontWeight: '900', color: '#0f8', margin: 0 }}>{m.oil.val}</p>
           </div>
         </div>
 
-        {/* 右侧：自由之路 · 严格筛选区 */}
-        <div>
-          <h2 style={{ fontSize: '14px', color: '#f00', marginBottom: '15px' }}>★ 自由之路 · 严格卡审个股 (放量 > 1.5x)</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
-            {m.sectors.map((s, i) => (
-              <div key={i} style={{ 
-                background: '#151515', padding: '15px', borderRadius: '12px', 
-                border: s.heat > 2.0 ? '2px solid #f00' : '1px solid #222',
-                opacity: s.heat > 1.5 ? 1 : 0.6
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontWeight: 'bold' }}>{s.name}</span>
-                  <span style={{ color: parseFloat(s.change) > 0 ? '#f00' : '#0f0' }}>{s.change}%</span>
-                </div>
-                <div style={{ margin: '10px 0', fontSize: '10px', color: '#666' }}>成交量比: <span style={{ color: '#fff' }}>{s.heat}x</span></div>
-                {s.heat > 1.5 && (
-                  <div style={{ background: '#300', padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
-                    <div style={{ fontSize: '10px', color: '#f88' }}>[ 推荐购买 ]</div>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#fff' }}>{s.stock}</div>
-                    <div style={{ fontSize: '10px', color: '#f88' }}>细分: {s.sub}</div>
-                  </div>
-                )}
+        {/* 中：全行业实时监控 & 自由之路卡审 */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '15px' }}>
+          {m.sectors.map((s, i) => (
+            <div key={i} style={{ background: '#111', padding: '15px', borderRadius: '12px', border: parseFloat(s.heat) > 2.0 ? '1px solid #f44' : '1px solid #222' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '20px', fontWeight: 'bold' }}>{s.name}</span>
+                <span style={{ color: parseFloat(s.change) > 0 ? '#f44' : '#0f8', fontWeight: 'bold' }}>{parseFloat(s.change) > 0 ? '+' : ''}{s.change}%</span>
               </div>
-            ))}
-          </div>
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>成交量比: <b style={{ color: '#fff' }}>{s.heat}x</b></div>
+              
+              {/* 自由之路卡审逻辑：成交量大于 1.5x 自动显示推荐个股 */}
+              {parseFloat(s.heat) > 1.5 && (
+                <div style={{ marginTop: '15px', background: '#200', padding: '10px', borderRadius: '8px', border: '1px solid #500' }}>
+                  <div style={{ fontSize: '10px', color: '#f66' }}>● 自由之路 · 锁定个股</div>
+                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#fff' }}>{s.stock}</div>
+                  <div style={{ fontSize: '11px', color: '#f66' }}>{s.sub}细分</div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* 右：实时情报流 */}
+        <div>
+          <h3 style={{ fontSize: '12px', color: '#444', marginBottom: '15px' }}>GLOBAL INTELLIGENCE</h3>
+          {m.news.map((n, i) => (
+            <div key={i} style={{ padding: '15px', background: '#111', borderRadius: '10px', marginBottom: '10px', fontSize: '12px', color: '#aaa', borderLeft: '3px solid #f00', lineHeight: '1.5' }}>
+              {n}
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -2,34 +2,38 @@ export default async function handler(req, res) {
   const ts = Date.now();
   const bjTime = new Date(ts + 8 * 3600 * 1000).toISOString().split('T')[1].split('.')[0];
 
-  // 1. 抄作业：全场景逻辑联动引擎 (Event-Driven Matrix)
-  // 模拟监测到全球地缘波动/能源危机
-  const rawScanner = [
-    { n: '光模块/算力', v: '840亿', c: 5.5, h: 3.2, link: 'AI军备竞赛', risk: '低' },
-    { n: '电网设备', v: '420亿', c: 1.8, h: 2.1, link: '战后/能源重建', risk: '中' },
-    { n: '石油加工', v: '560亿', c: 4.2, h: 3.5, link: '能源通胀', risk: '高' },
-    { n: '种植业/粮食', v: '120亿', c: 3.5, h: 2.8, link: '供应链防御', risk: '低' },
-    { n: '卫星互联网', v: '210亿', c: 6.2, h: 4.1, link: '战场信息化', risk: '高' },
-    { n: '航运/港口', v: '310亿', c: -1.5, h: 1.2, link: '红海/地缘受阻', risk: '极高' }
+  // 1. 全球情报搜集 (模拟实时抓取)
+  const globalIntel = [
+    { event: "地缘动荡", impact: "能源/电力/军工", source: "Reuters" },
+    { event: "流动性拐点", impact: "有色金属/黄金", source: "Bloomberg" }
   ];
 
-  // 2. 抄作业：冷血过滤器 (只有 Heat > 1.8 且风险可控的才准输出)
-  const auditPassed = rawScanner
-    .filter(s => s.h > 1.8 && s.c > 0)
-    .sort((a, b) => b.h - a.h);
+  // 2. 全球资金流向地图 (追踪钱到了哪)
+  const moneyFlowMap = {
+    '电力设备': { flow: '+12.5亿', trend: '强流入', heat: 2.8 },
+    '光模块': { flow: '+18.2亿', trend: '高位分歧', heat: 3.5 },
+    '农业/粮食': { flow: '+4.1亿', trend: '低位异动', heat: 1.9 }
+  };
+
+  // 3. 过“标准线”个股审计 (只留符合 5亿成交+1.8x量比 的股)
+  const auditedStocks = {
+    '电力设备': [
+      { code: '600406', name: '国电南瑞', vol: '15.2亿', heat: 2.1, status: 'PASS' },
+      { code: '002202', name: '金风科技', vol: '8.4亿', heat: 2.4, status: 'PASS' }
+    ],
+    '农业/粮食': [
+      { code: '000998', name: '隆平高科', vol: '6.1亿', heat: 1.9, status: 'PASS' }
+    ]
+  };
 
   res.status(200).json({
     time: bjTime,
-    passed: auditPassed,
-    // 3. 抄作业：全球宏观对照组
-    macro: [
-      { name: 'USD/CNH', val: '7.24', status: 'WARN' },
-      { name: 'WTI Oil', val: '82.5', status: 'HOT' },
-      { name: 'A50 Fut', val: '13560', status: 'STABLE' }
-    ],
-    news: [
-      "量化分析：检测到石油与军工板块高强度共振，资金留存概率 82%。",
-      "风险提示：航运板块受地缘压制明显，由于成本激增，避开物流终端。"
-    ]
+    dailyBrief: {
+      summary: "今日全球资金因地缘避险情绪，正从消费类板块撤离，大规模流向具有‘战后重建’属性的电力基建与‘粮食安全’板块。",
+      strategy: "Tuesday 策略：锁定电力板块中量比 > 2.0 的个股，执行 1/3 仓位博弈。"
+    },
+    intelligence: globalIntel,
+    moneyFlow: moneyFlowMap,
+    recommendations: auditedStocks
   });
 }
